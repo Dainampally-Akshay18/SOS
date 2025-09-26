@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Latest Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Tailwind Configuration -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'church-primary': '#6366f1',
+              'church-secondary': '#8b5cf6',
+              'church-accent': '#f59e0b',
+              'church-navy': '#1e3a8a',
+              'church-gold': '#f59e0b',
+            },
+            fontFamily: {
+              'sans': ['Inter', 'ui-sans-serif', 'system-ui'],
+              'serif': ['Playfair Display', 'ui-serif', 'Georgia'],
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.8s ease-out',
+              'slide-up': 'slideUp 0.6s ease-out',
+              'float': 'float 6s ease-in-out infinite',
+            },
+          }
+        }
+      }
+    </script>
+    
+    <title>Join Our Church Community</title>
+
+    <!-- Enhanced CSS Styles -->
+    <style type="text/tailwindcss">
+      @layer base {
+        html, body, #root {
+          @apply h-full;
+        }
+        
+        body {
+          @apply m-0 p-0 font-sans;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+      }
+      
+      @layer utilities {
+        .glass-effect {
+          backdrop-filter: blur(16px) saturate(180%);
+          -webkit-backdrop-filter: blur(16px) saturate(180%);
+          background-color: rgba(255, 255, 255, 0.75);
+          border: 1px solid rgba(255, 255, 255, 0.125);
+        }
+        
+        .floating-orb {
+          position: absolute;
+          border-radius: 50%;
+          opacity: 0.6;
+          animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-orb:nth-child(1) {
+          top: 20%;
+          left: 10%;
+          width: 60px;
+          height: 60px;
+          background: linear-gradient(45deg, #f59e0b, #f97316);
+          animation-delay: 0s;
+        }
+        
+        .floating-orb:nth-child(2) {
+          top: 70%;
+          right: 15%;
+          width: 80px;
+          height: 80px;
+          background: linear-gradient(45deg, #8b5cf6, #6366f1);
+          animation-delay: 2s;
+        }
+        
+        .floating-orb:nth-child(3) {
+          bottom: 20%;
+          left: 20%;
+          width: 40px;
+          height: 40px;
+          background: linear-gradient(45deg, #ec4899, #f43f5e);
+          animation-delay: 4s;
+        }
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateY(40px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+      }
+    </style>
+  </head>
+  <body class="h-full bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700">
+    <div id="root" class="h-full"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
