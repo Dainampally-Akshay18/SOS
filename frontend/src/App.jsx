@@ -1,110 +1,38 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import LoginForm from './components/auth/LoginForm';
-import RegisterForm from './components/auth/RegisterForm';
-import WaitingApproval from './components/dashboard/WaitingApproval';
-import UserDashboard from './components/dashboard/UserDashboard';
-import LoadingSpinner from './components/common/LoadingSpinner';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import LandingPage from './pages/LandingPage';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Dashboard from './pages/Dashboard';
 
-// Protected Route Component
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, isLoading, isApproved, requiresApproval } = useAuth();
-
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (requiresApproval()) {
-    return <WaitingApproval />;
-  }
-
-  if (!isApproved()) {
-    return <WaitingApproval />;
-  }
-
-  return children;
-};
-
-// Public Route Component
-const PublicRoute = ({ children }) => {
-  const { isAuthenticated, isLoading, isApproved, requiresApproval } = useAuth();
-
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
-  if (isAuthenticated) {
-    if (requiresApproval()) {
-      return <Navigate to="/waiting" replace />;
-    }
-    if (isApproved()) {
-      return <Navigate to="/dashboard" replace />;
-    }
-    return <Navigate to="/waiting" replace />;
-  }
-
-  return children;
-};
-
-// App Routes Component
-const AppRoutes = () => {
-  return (
-    <Routes>
-      <Route 
-        path="/login" 
-        element={
-          <PublicRoute>
-            <LoginForm />
-          </PublicRoute>
-        } 
-      />
-      
-      <Route 
-        path="/register" 
-        element={
-          <PublicRoute>
-            <RegisterForm />
-          </PublicRoute>
-        } 
-      />
-
-      <Route 
-        path="/waiting" 
-        element={
-          <ProtectedRoute>
-            <WaitingApproval />
-          </ProtectedRoute>
-        } 
-      />
-
-      <Route 
-        path="/dashboard" 
-        element={
-          <ProtectedRoute>
-            <UserDashboard />
-          </ProtectedRoute>
-        } 
-      />
-
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
-    </Routes>
-  );
-};
-
-// MAIN APP COMPONENT - FIXED FOR FULL HEIGHT
 function App() {
   return (
-    <div className="h-full w-full">
+    <div className="min-h-screen bg-white">
       <Router>
-        <AuthProvider>
-          <AppRoutes />
-        </AuthProvider>
+        <Navbar/>
+        {/* Global Light Mode Container */}
+        <div className="min-h-screen bg-white text-gray-800">
+          {/* Conditional Navbar - Only show on certain routes */}
+          <Routes>
+            {/* Routes with Navbar */}
+            <Route 
+              path="/" 
+              element={
+                <div>
+                  <LandingPage />
+                </div>
+              } 
+            />
+            
+            {/* Routes without Navbar (Login/Signup have their own styling) */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            
+            {/* Dashboard with potential different navbar */}
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Routes>
+        </div>
       </Router>
     </div>
   );
