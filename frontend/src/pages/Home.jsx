@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import { 
   User, 
   Activity, 
@@ -14,19 +14,32 @@ import {
   ChevronDown,
   ChevronUp
 } from 'lucide-react';
-import bibleReadingPlan from '../biberead.json'; // Adjust path as needed
+import bibleReadingData from '../biberead.json'; // Adjust path as needed
 
 const Home = () => {
   const [expandedSection, setExpandedSection] = useState(null);
   const [currentReading, setCurrentReading] = useState(null);
+  const [allReadings, setAllReadings] = useState([]);
 
-  // Get today's Bible reading
+  // Process Bible reading data and get today's reading
   useEffect(() => {
-    const today = new Date();
-    const dateString = today.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    // Flatten all reading plans from all months into a single array
+    const flattenedReadings = bibleReadingData.flatMap(monthPlan => 
+      monthPlan.reading_plan.map(reading => ({
+        ...reading,
+        // Ensure date is in correct format
+        date: reading.date
+      }))
+    );
     
-    // Find today's reading in the Bible plan
-    const todayReading = bibleReadingPlan.readingplan?.find(
+    setAllReadings(flattenedReadings);
+
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date();
+    const dateString = today.toISOString().split('T')[0];
+    
+    // Find today's reading in the flattened Bible plan
+    const todayReading = flattenedReadings.find(
       reading => reading.date === dateString
     );
     
@@ -97,6 +110,29 @@ const Home = () => {
   const toggleSection = (section) => {
     setExpandedSection(expandedSection === section ? null : section);
   };
+
+  // Calculate reading progress
+  const calculateProgress = () => {
+    if (allReadings.length === 0) return { percentage: 0, day: 0, total: 0 };
+    
+    const totalReadings = allReadings.length;
+    const today = new Date();
+    const startDate = new Date(allReadings[0]?.date);
+    
+    if (!startDate) return { percentage: 0, day: 0, total: 0 };
+    
+    const daysDiff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+    const currentDay = Math.min(Math.max(daysDiff, 1), totalReadings);
+    const percentage = (currentDay / totalReadings) * 100;
+    
+    return {
+      percentage: Math.round(percentage),
+      day: currentDay,
+      total: totalReadings
+    };
+  };
+
+  const progress = calculateProgress();
 
   return (
     <div className="space-y-8">
@@ -176,7 +212,7 @@ const Home = () => {
               {currentReading ? (
                 <div className="space-y-6">
                   {/* Scripture Sections */}
-                  {currentReading.chapters.split(', ').map((chapter, index) => {
+                  {currentReading.chapters.map((chapter, index) => {
                     const sections = [
                       { name: 'New Testament', color: 'bg-blue-500', icon: '📘' },
                       { name: 'Acts/Letters', color: 'bg-green-500', icon: '📜' },
@@ -243,12 +279,17 @@ const Home = () => {
                   <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium text-gray-700">Reading Progress</span>
-                      <span className="text-sm text-blue-600">Day 271 of 365</span>
+                      <span className="text-sm text-blue-600">Day {progress.day} of {progress.total}</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                      <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full" style={{width: '74%'}}></div>
+                      <div 
+                        className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500" 
+                        style={{width: `${progress.percentage}%`}}
+                      ></div>
                     </div>
-                    <p className="text-xs text-gray-600">Keep up the great work! You're 74% through this year's reading plan.</p>
+                    <p className="text-xs text-gray-600">
+                      Keep up the great work! You're {progress.percentage}% through this year's reading plan.
+                    </p>
                   </div>
                 </div>
               ) : (
@@ -296,9 +337,6 @@ const Home = () => {
 
       {/* Main Content Grid - Enhanced */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Quick Actions - Enhanced */}
-        
-
         {/* Recent Activity - Enhanced */}
         <div className="lg:col-span-2">
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
